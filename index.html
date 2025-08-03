@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Code Data Entry</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #reader { width: 300px; margin-bottom: 20px; }
+    .entry { margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>QR Code Data Entry</h2>
+
+  <div id="reader"></div>
+
+  <div class="entry">
+    <label>Scanned Data:</label><br>
+    <input type="text" id="qr-data" readonly style="width: 300px;"><br><br>
+
+    <label>Additional Info:</label><br>
+    <input type="text" id="extra-info" placeholder="Optional info"><br><br>
+
+    <button onclick="saveData()">Save Data</button>
+  </div>
+
+  <h3>Saved Entries:</h3>
+  <ul id="data-list"></ul>
+
+  <script>
+    function onScanSuccess(decodedText, decodedResult) {
+      document.getElementById("qr-data").value = decodedText;
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+      { facingMode: "environment" }, 
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    ).catch(err => console.error("Camera error:", err));
+
+    function saveData() {
+      const data = document.getElementById("qr-data").value;
+      const extra = document.getElementById("extra-info").value;
+      if (!data) {
+        alert("No QR data to save.");
+        return;
+      }
+
+      const entry = `${data} ${extra ? "- " + extra : ""}`;
+      const list = document.getElementById("data-list");
+      const li = document.createElement("li");
+      li.textContent = entry;
+      list.appendChild(li);
+
+      // Optional: Clear input
+      document.getElementById("qr-data").value = "";
+      document.getElementById("extra-info").value = "";
+    }
+  </script>
+
+</body>
+</html>
